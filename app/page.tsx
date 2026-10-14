@@ -1,86 +1,87 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Die } from "@/components/die";
-import { SiteHeader } from "@/components/site-header";
+import { TopBar } from "@/components/top-bar";
+
+type Game = {
+  href: string;
+  name: string;
+  blurb: string;
+  color: string;
+  art: ReactNode;
+  wide?: boolean;
+};
+
+const games: Game[] = [
+  {
+    href: "/letter",
+    name: "Letter",
+    blurb: "Name, Animal, Place, Thing",
+    color: "bg-butter",
+    art: <span className="font-display text-6xl leading-none">K</span>,
+  },
+  {
+    href: "/word",
+    name: "Word",
+    blurb: "Charades and Pictionary",
+    color: "bg-bubblegum",
+    art: <span className="font-display text-xl leading-none">kangaroo</span>,
+  },
+  {
+    href: "/number",
+    name: "Number",
+    blurb: "Any range you like",
+    color: "bg-mint",
+    art: <span className="font-display text-5xl leading-none">42</span>,
+  },
+  {
+    href: "/dice",
+    name: "Dice",
+    blurb: "Roll up to six",
+    color: "bg-lilac",
+    art: (
+      <span className="flex items-end gap-2">
+        <Die value={5} className="size-12 -rotate-6 [--depth:3px]" />
+        <Die value={3} className="size-10 rotate-[8deg] [--depth:3px]" />
+      </span>
+    ),
+  },
+  {
+    href: "/teams",
+    name: "Teams",
+    blurb: "Split your group into random teams",
+    color: "bg-tangerine",
+    art: <span className="font-display text-3xl leading-none">us vs them</span>,
+    wide: true,
+  },
+];
 
 export default function Home() {
   return (
     <>
-      <SiteHeader />
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pb-20 sm:px-8">
-        <section className="pt-10 sm:pt-20">
-          <h1 className="max-w-[11ch] font-display text-[clamp(2.75rem,10vw,6.25rem)] leading-[0.95]">
-            Random picks for game night
-          </h1>
-          <p className="mt-9 max-w-[44ch] text-lg text-paper/85 sm:text-xl">
-            Letters, words, numbers, dice and teams, picked at random. Pass the phone around,
-            play, then tap again.
-          </p>
-        </section>
+      <TopBar title="Randomz" showHome={false} />
+      <main className="flex-1 px-4 pt-2 pb-6">
+        <h2 className="font-display text-[2rem] leading-tight">What are we playing?</h2>
+        <p className="mt-2 text-paper/80">Pick a game, tap the button, pass the phone.</p>
 
-        <div className="mt-16 grid gap-14 sm:mt-20 sm:grid-cols-[auto_1fr] sm:gap-12">
-          <Link href="/letter" className="group block rounded-3xl">
-            <span className="piece grid size-40 place-items-center rounded-[18%] bg-butter font-display text-8xl transition-transform group-hover:-translate-y-1 sm:size-44">
-              K
-            </span>
-            <span className="mt-7 block font-display text-2xl">Random letter</span>
-            <span className="mt-1 block max-w-[30ch] text-paper/85">
-              For Name, Animal, Place, Thing, Scattergories and other letter games.
-            </span>
-          </Link>
-
-          <Link href="/word" className="group block rounded-3xl">
-            <span className="piece grid h-40 w-full max-w-120 place-items-center rounded-[1.75rem] bg-bubblegum font-display text-[clamp(2.25rem,8vw,3.25rem)] transition-transform group-hover:-translate-y-1 sm:h-44">
-              kangaroo
-            </span>
-            <span className="mt-7 block font-display text-2xl">Random word</span>
-            <span className="mt-1 block max-w-[34ch] text-paper/85">
-              For charades, Pictionary and guessing games. Choose animals, food, actions and
-              more.
-            </span>
-          </Link>
-        </div>
-
-        <section aria-labelledby="more-heading" className="mt-24">
-          <h2 id="more-heading" className="font-display text-2xl">
-            More ways to pick
-          </h2>
-          <div className="mt-10 grid gap-12 sm:grid-cols-3 sm:gap-8">
-            <Link href="/number" className="group block rounded-3xl">
-              <span className="flex h-28 items-end">
-                <span className="piece grid size-28 place-items-center rounded-full bg-mint font-display text-5xl transition-transform [--depth:6px] group-hover:-translate-y-1">
-                  42
+        <ul className="mt-6 grid grid-cols-2 gap-3">
+          {games.map((game) => (
+            <li key={game.href} className={game.wide ? "col-span-2" : ""}>
+              <Link
+                href={game.href}
+                className={`piece flex h-full flex-col justify-between gap-3 rounded-3xl p-4 transition-transform [--depth:6px] active:translate-y-1 ${game.color} ${game.wide ? "min-h-32" : "aspect-square"}`}
+              >
+                <span className="flex flex-1 items-center">{game.art}</span>
+                <span>
+                  <span className="block font-display text-xl">{game.name}</span>
+                  <span className="block text-sm leading-snug font-medium text-ink/75">
+                    {game.blurb}
+                  </span>
                 </span>
-              </span>
-              <span className="mt-6 block font-display text-xl">Random number</span>
-              <span className="mt-1 block max-w-[28ch] text-paper/85">
-                Pick from any range, like 1 to 10 or 1 to 100.
-              </span>
-            </Link>
-
-            <Link href="/dice" className="group block rounded-3xl">
-              <span className="flex h-28 items-end gap-3 transition-transform group-hover:-translate-y-1">
-                <Die value={5} className="size-24 -rotate-6" />
-                <Die value={3} className="size-20 rotate-[8deg]" />
-              </span>
-              <span className="mt-6 block font-display text-xl">Dice</span>
-              <span className="mt-1 block max-w-[28ch] text-paper/85">
-                Roll one to six dice for board games.
-              </span>
-            </Link>
-
-            <Link href="/teams" className="group block rounded-3xl">
-              <span className="flex h-28 items-end">
-                <span className="piece grid h-28 w-full max-w-60 place-items-center rounded-3xl bg-tangerine font-display text-3xl transition-transform [--depth:6px] group-hover:-translate-y-1">
-                  us vs them
-                </span>
-              </span>
-              <span className="mt-6 block font-display text-xl">Team picker</span>
-              <span className="mt-1 block max-w-[28ch] text-paper/85">
-                Split your group into random teams.
-              </span>
-            </Link>
-          </div>
-        </section>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </main>
     </>
   );

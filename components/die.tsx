@@ -18,10 +18,10 @@ export function Die({ value, rolling = false, className = "" }: Props) {
   return (
     <span
       data-rolling={rolling}
-      className={`piece grid aspect-square rounded-[22%] bg-paper [--depth:6px] ${className}`}
+      className={`piece @container grid aspect-square rounded-[22%] bg-paper [--depth:6px] ${className}`}
     >
       {value === null ? (
-        <span className="place-self-center font-display text-[2.5em] leading-none">?</span>
+        <span className="place-self-center font-display text-[50cqw] leading-none">?</span>
       ) : (
         <span className="grid grid-cols-3 grid-rows-3 p-[16%] pb-[20%]">
           {Array.from({ length: 9 }, (_, i) => (

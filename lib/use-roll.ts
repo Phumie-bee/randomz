@@ -34,6 +34,8 @@ export function useRollAnimation<T>(onSpace: () => void) {
     timers.current.timeout = window.setTimeout(() => {
       stop();
       land();
+      // A short buzz as the result lands, on phones that support it.
+      navigator.vibrate?.(15);
     }, ROLL_MS);
   }
 

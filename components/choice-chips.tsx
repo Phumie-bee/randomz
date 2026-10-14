@@ -6,27 +6,39 @@ type Props<T extends string | number> = {
   options: readonly Option<T>[];
   value: T;
   onChange: (value: T) => void;
-  className?: string;
+  /** "scroll" for a sideways-scrolling row of pills, "segmented" for equal-width segments. */
+  variant?: "scroll" | "segmented";
 };
 
-/** A row of pill-shaped radio buttons. */
+// `relative` keeps each visually hidden radio inside its chip, so focusing it
+// can't push the page sideways.
+export const chipClass =
+  "relative shrink-0 cursor-pointer rounded-full border-2 border-paper/30 px-4 py-1.5 font-semibold whitespace-nowrap active:scale-95 has-checked:border-paper has-checked:bg-paper has-checked:text-ink has-focus-visible:outline-3 has-focus-visible:outline-offset-3 has-focus-visible:outline-butter aria-pressed:border-paper aria-pressed:bg-paper aria-pressed:text-ink";
+
+const segmentClass =
+  "relative cursor-pointer rounded-full py-2 text-center font-semibold text-paper/75 has-checked:bg-paper has-checked:text-ink has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-butter";
+
+/** A set of radio buttons styled as pills or a segmented control. */
 export function ChoiceChips<T extends string | number>({
   legend,
   name,
   options,
   value,
   onChange,
-  className = "",
+  variant = "scroll",
 }: Props<T>) {
   return (
-    <fieldset className={`w-full max-w-xl ${className}`}>
-      <legend className="mb-3 w-full text-center font-semibold text-paper/85">{legend}</legend>
-      <div className="flex flex-wrap justify-center gap-2">
+    <fieldset>
+      <legend className="mb-2 text-sm font-semibold text-paper/75">{legend}</legend>
+      <div
+        className={
+          variant === "scroll"
+            ? "-mx-4 flex gap-2 overflow-x-auto px-4 py-1 scrollbar-none"
+            : "grid auto-cols-fr grid-flow-col rounded-full bg-table-deep p-1"
+        }
+      >
         {options.map((option) => (
-          <label
-            key={option.value}
-            className="min-w-11 cursor-pointer rounded-full border-2 border-paper/40 px-4 py-1.5 text-center font-semibold hover:border-paper has-checked:border-paper has-checked:bg-paper has-checked:text-ink has-focus-visible:outline-3 has-focus-visible:outline-offset-3 has-focus-visible:outline-butter"
-          >
+          <label key={option.value} className={variant === "scroll" ? chipClass : segmentClass}>
             <input
               type="radio"
               name={name}

@@ -5,9 +5,20 @@ import { randomInt } from "@/lib/random";
 import { useRollAnimation } from "@/lib/use-roll";
 import { ChoiceChips } from "./choice-chips";
 import { Die } from "./die";
-import { KeyHint, RollButton, RoundPanel } from "./game-controls";
+import { RollButton, RollNote, RoundStrip } from "./game-controls";
+import { GameScreen } from "./game-screen";
 
 const counts = [1, 2, 3, 4, 5, 6].map((n) => ({ value: n, label: String(n) }));
+
+// Fewer dice are drawn bigger; sizes also shrink on short screens.
+const dieLayout: Record<number, { grid: string; die: string }> = {
+  1: { grid: "grid-cols-1", die: "size-[min(44vw,30dvh,11rem)]" },
+  2: { grid: "grid-cols-2", die: "size-[min(38vw,24dvh,9rem)]" },
+  3: { grid: "grid-cols-3", die: "size-[min(26vw,18dvh,7rem)]" },
+  4: { grid: "grid-cols-2", die: "size-[min(30vw,15dvh,7rem)]" },
+  5: { grid: "grid-cols-3", die: "size-[min(25vw,13dvh,6rem)]" },
+  6: { grid: "grid-cols-3", die: "size-[min(25vw,13dvh,6rem)]" },
+};
 
 function rollDice(count: number) {
   return Array.from({ length: count }, () => randomInt(6) + 1);
@@ -50,52 +61,57 @@ export function DicePicker() {
   }
 
   const shown = flicker ?? result;
+  const layout = dieLayout[count];
 
   return (
-    <div className="flex flex-col items-center">
-      <ChoiceChips
-        legend="How many dice"
-        name="count"
-        options={counts}
-        value={count}
-        onChange={changeCount}
-        className="mb-10"
-      />
-
-      <div className="flex max-w-xl flex-wrap justify-center gap-5 sm:gap-6">
-        {Array.from({ length: count }, (_, i) => (
-          <span key={`${rolls}-${i}`} className={rolling ? "" : "land"}>
-            <Die value={shown?.[i] ?? null} rolling={rolling} className="size-24 sm:size-28" />
-          </span>
-        ))}
+    <GameScreen
+      title="Dice"
+      controls={
+        <ChoiceChips
+          legend="How many dice"
+          name="count"
+          options={counts}
+          value={count}
+          onChange={changeCount}
+          variant="segmented"
+        />
+      }
+      footer={
+        <>
+          <RoundStrip
+            history={history}
+            emptyText="Your rolls show up here."
+            onReset={reset}
+            renderItem={(values) => (
+              <span className="block rounded-full bg-paper px-3 py-1.5 font-semibold whitespace-nowrap text-ink tabular-nums">
+                {values.length > 1 ? `${values.join(" + ")} = ${sum(values)}` : values[0]}
+              </span>
+            )}
+          />
+          <RollButton onClick={roll} disabled={rolling}>
+            {count === 1 ? "Roll the die" : "Roll the dice"}
+          </RollButton>
+          <RollNote keyboardOnly>Or press Space</RollNote>
+        </>
+      }
+    >
+      <div className="flex flex-col items-center">
+        <div className={`grid gap-4 ${layout.grid}`}>
+          {Array.from({ length: count }, (_, i) => (
+            <span key={`${rolls}-${i}`} className={rolling ? "" : "land"}>
+              <Die value={shown?.[i] ?? null} rolling={rolling} className={layout.die} />
+            </span>
+          ))}
+        </div>
+        {count > 1 && (
+          <p className="mt-6 min-h-9 font-display text-2xl">{shown && <>Total {sum(shown)}</>}</p>
+        )}
       </div>
-
-      {count > 1 && (
-        <p className="mt-8 min-h-10 font-display text-3xl">
-          {shown && <>Total {sum(shown)}</>}
-        </p>
-      )}
       <p aria-live="polite" className="sr-only">
         {result
           ? `Roll ${rolls}: ${result.join(", ")}${result.length > 1 ? `, total ${sum(result)}` : ""}`
           : ""}
       </p>
-
-      <RollButton onClick={roll} disabled={rolling} className={count > 1 ? "mt-8" : "mt-12"}>
-        {count === 1 ? "Roll the die" : "Roll the dice"}
-      </RollButton>
-      <KeyHint>Or press Space</KeyHint>
-
-      <RoundPanel
-        history={history}
-        emptyText="Your rolls show up here."
-        onReset={reset}
-        renderItem={(values) => (
-          <span className="block rounded-full bg-paper px-3 py-1 font-semibold text-ink tabular-nums">
-            {values.length > 1 ? `${values.join(" + ")} = ${sum(values)}` : values[0]}
-          </span>
-        )}
-      />
-    </div>
+    </GameScreen>
   );
 }
