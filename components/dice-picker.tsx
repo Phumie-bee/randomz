@@ -10,14 +10,33 @@ import { GameScreen } from "./game-screen";
 
 const counts = [1, 2, 3, 4, 5, 6].map((n) => ({ value: n, label: String(n) }));
 
-// Fewer dice are drawn bigger; sizes also shrink on short screens.
+// On phones and tablets, fewer dice are drawn bigger and sizes shrink on
+// short screens. Computers show one row of same-size dice.
 const dieLayout: Record<number, { grid: string; die: string }> = {
-  1: { grid: "grid-cols-1", die: "size-[min(44vw,30dvh,11rem)]" },
-  2: { grid: "grid-cols-2", die: "size-[min(38vw,24dvh,9rem)]" },
-  3: { grid: "grid-cols-3", die: "size-[min(26vw,18dvh,7rem)]" },
-  4: { grid: "grid-cols-2", die: "size-[min(30vw,15dvh,7rem)]" },
-  5: { grid: "grid-cols-3", die: "size-[min(25vw,13dvh,6rem)]" },
-  6: { grid: "grid-cols-3", die: "size-[min(25vw,13dvh,6rem)]" },
+  1: {
+    grid: "grid-cols-1",
+    die: "size-[min(44vw,30dvh,11rem)] tablet:size-[min(36vw,30dvh,14rem)]",
+  },
+  2: {
+    grid: "grid-cols-2",
+    die: "size-[min(38vw,24dvh,9rem)] tablet:size-[min(30vw,26dvh,11rem)]",
+  },
+  3: {
+    grid: "grid-cols-3",
+    die: "size-[min(26vw,18dvh,7rem)] tablet:size-[min(22vw,20dvh,9rem)]",
+  },
+  4: {
+    grid: "grid-cols-2",
+    die: "size-[min(30vw,15dvh,7rem)] tablet:size-[min(24vw,17dvh,8.5rem)]",
+  },
+  5: {
+    grid: "grid-cols-3",
+    die: "size-[min(25vw,13dvh,6rem)] tablet:size-[min(20vw,16dvh,8rem)]",
+  },
+  6: {
+    grid: "grid-cols-3",
+    die: "size-[min(25vw,13dvh,6rem)] tablet:size-[min(20vw,16dvh,8rem)]",
+  },
 };
 
 function rollDice(count: number) {
@@ -66,6 +85,7 @@ export function DicePicker() {
   return (
     <GameScreen
       title="Dice"
+      appTitle="Dice"
       controls={
         <ChoiceChips
           legend="How many dice"
@@ -76,18 +96,20 @@ export function DicePicker() {
           variant="segmented"
         />
       }
-      footer={
+      round={() => (
+        <RoundStrip
+          history={history}
+          emptyText="Your rolls show up here."
+          onReset={reset}
+          renderItem={(values) => (
+            <span className="block rounded-full bg-paper px-3 py-1.5 font-semibold whitespace-nowrap text-ink tabular-nums">
+              {values.length > 1 ? `${values.join(" + ")} = ${sum(values)}` : values[0]}
+            </span>
+          )}
+        />
+      )}
+      action={
         <>
-          <RoundStrip
-            history={history}
-            emptyText="Your rolls show up here."
-            onReset={reset}
-            renderItem={(values) => (
-              <span className="block rounded-full bg-paper px-3 py-1.5 font-semibold whitespace-nowrap text-ink tabular-nums">
-                {values.length > 1 ? `${values.join(" + ")} = ${sum(values)}` : values[0]}
-              </span>
-            )}
-          />
           <RollButton onClick={roll} disabled={rolling}>
             {count === 1 ? "Roll the die" : "Roll the dice"}
           </RollButton>
@@ -96,15 +118,23 @@ export function DicePicker() {
       }
     >
       <div className="flex flex-col items-center">
-        <div className={`grid gap-4 ${layout.grid}`}>
+        <div
+          className={`grid gap-4 tablet:gap-6 desktop:flex desktop:flex-wrap desktop:justify-center desktop:gap-6 ${layout.grid}`}
+        >
           {Array.from({ length: count }, (_, i) => (
             <span key={`${rolls}-${i}`} className={rolling ? "" : "land"}>
-              <Die value={shown?.[i] ?? null} rolling={rolling} className={layout.die} />
+              <Die
+                value={shown?.[i] ?? null}
+                rolling={rolling}
+                className={`${layout.die} desktop:size-28`}
+              />
             </span>
           ))}
         </div>
         {count > 1 && (
-          <p className="mt-6 min-h-9 font-display text-2xl">{shown && <>Total {sum(shown)}</>}</p>
+          <p className="mt-6 min-h-9 font-display text-2xl tablet:mt-8 tablet:text-3xl desktop:mt-8 desktop:text-3xl">
+            {shown && <>Total {sum(shown)}</>}
+          </p>
         )}
       </div>
       <p aria-live="polite" className="sr-only">

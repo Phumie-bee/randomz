@@ -9,7 +9,7 @@ type Props = {
   children: ReactNode;
 };
 
-/** A panel that slides up from the bottom, like a mobile app's settings sheet. */
+/** Settings panel: slides up from the bottom on phones, a centred popup on larger screens. */
 export function Sheet({ open, onClose, title, children }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -33,8 +33,9 @@ export function Sheet({ open, onClose, title, children }: Props) {
       className="sheet"
     >
       <div className="px-5 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
-        <div aria-hidden className="mx-auto h-1.5 w-10 rounded-full bg-paper/30" />
-        <div className="mt-3 flex items-center justify-between">
+        {/* Drag handle: phones only, where this is a bottom sheet. */}
+        <div aria-hidden className="mx-auto h-1.5 w-10 rounded-full bg-paper/30 tablet:hidden desktop:hidden" />
+        <div className="mt-3 flex items-center justify-between tablet:mt-2 desktop:mt-2">
           <h2 id={titleId} className="font-display text-xl">
             {title}
           </h2>

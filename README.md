@@ -19,6 +19,16 @@ Then open http://localhost:3000.
 - `/dice`: roll one to six dice.
 - `/teams`: split a list of players into random teams.
 
+## Layouts
+
+The site picks a layout for the device:
+
+- **Phone:** a phone app with a bottom tab bar. Each game fits on one screen.
+- **Tablet** (iPad and other touch screens 640px and wider, or any screen 640–1023px wide): an iPad-style app with a sidebar.
+- **Computer** (1024px and wider, with a mouse or trackpad): the website design with a top menu.
+
+The breakpoints are the `tablet` and `desktop` variants at the top of `app/globals.css`.
+
 ## Install it on your phone
 
 Randomz is built to feel like a phone app. Open the site on your phone, then:

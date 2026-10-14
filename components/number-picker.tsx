@@ -1,11 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { useRoll } from "@/lib/use-roll";
 import { chipClass } from "./choice-chips";
-import { RollButton, RollNote, RoundStrip, SettingsButton, Toggle } from "./game-controls";
+import { RollButton, RollNote, RoundStrip, Toggle } from "./game-controls";
 import { GameScreen } from "./game-screen";
-import { Sheet } from "./sheet";
 
 const LIMIT = 999_999;
 const MAX_RANGE = 10_000;
@@ -40,8 +39,8 @@ function parseRange(from: string, to: string): Range {
 
 // Longer numbers get a smaller size (relative to the token) so they fit inside it.
 function sizeFor(text: string) {
-  if (text.length <= 2) return "text-[48cqw]";
-  if (text.length === 3) return "text-[36cqw]";
+  if (text.length <= 2) return "text-[42cqw]";
+  if (text.length === 3) return "text-[34cqw]";
   if (text.length === 4) return "text-[27cqw]";
   if (text.length === 5) return "text-[21cqw]";
   return "text-[17cqw]";
@@ -50,11 +49,60 @@ function sizeFor(text: string) {
 const inputClass =
   "mt-1.5 w-full rounded-2xl bg-paper px-3 py-2.5 text-center font-display text-2xl text-ink";
 
+type RangeFieldsProps = {
+  from: string;
+  to: string;
+  onFromChange: (value: string) => void;
+  onToChange: (value: string) => void;
+  error: string | null;
+};
+
+/** From and To boxes. In Settings on phones and tablets; on the page on computers. */
+function RangeFields({ from, to, onFromChange, onToChange, error }: RangeFieldsProps) {
+  const errorId = useId();
+
+  return (
+    <fieldset>
+      <legend className="text-sm font-semibold text-paper/75 desktop:sr-only">Range</legend>
+      <div className="mt-2 grid grid-cols-2 gap-3 desktop:mx-auto desktop:mt-0 desktop:max-w-xs desktop:text-center">
+        <label className="font-semibold">
+          From
+          <input
+            type="number"
+            inputMode="numeric"
+            value={from}
+            onChange={(e) => onFromChange(e.target.value)}
+            aria-invalid={error !== null}
+            aria-describedby={errorId}
+            className={inputClass}
+          />
+        </label>
+        <label className="font-semibold">
+          To
+          <input
+            type="number"
+            inputMode="numeric"
+            value={to}
+            onChange={(e) => onToChange(e.target.value)}
+            aria-invalid={error !== null}
+            aria-describedby={errorId}
+            className={inputClass}
+          />
+        </label>
+      </div>
+      <p id={errorId} className="mt-2 min-h-6 text-sm font-semibold text-butter desktop:text-center">
+        {error}
+      </p>
+    </fieldset>
+  );
+}
+
 export function NumberPicker() {
   const [from, setFrom] = useState("1");
   const [to, setTo] = useState("100");
   const [noRepeats, setNoRepeats] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const rangeLabelId = useId();
 
   const range = useMemo(() => parseRange(from, to), [from, to]);
   const { shown, result, rolling, rolls, history, available, roll, reset } = useRoll(range.pool, {
@@ -64,17 +112,35 @@ export function NumberPicker() {
   const text = shown ?? "?";
   const isPreset = presets.some((p) => from === String(p.from) && to === String(p.to));
 
+  const rangeFields = (
+    <RangeFields
+      from={from}
+      to={to}
+      onFromChange={setFrom}
+      onToChange={setTo}
+      error={range.ok ? null : range.error}
+    />
+  );
+  const noRepeatsToggle = (
+    <Toggle checked={noRepeats} onChange={setNoRepeats}>
+      No repeats this round
+    </Toggle>
+  );
+
   return (
-    <>
-      <GameScreen
-        title="Number"
-        action={<SettingsButton onClick={() => setSettingsOpen(true)} />}
-        controls={
-          <div role="group" aria-labelledby="range-label">
-            <p id="range-label" className="mb-2 text-sm font-semibold text-paper/75">
+    <GameScreen
+      title="Random number"
+      appTitle="Number"
+      settingsOpen={settingsOpen}
+      onSettingsOpenChange={setSettingsOpen}
+      controls={
+        <>
+          <div className="hidden desktop:mb-3 desktop:block">{rangeFields}</div>
+          <div role="group" aria-labelledby={rangeLabelId}>
+            <p id={rangeLabelId} className="mb-2 text-sm font-semibold text-paper/75 desktop:sr-only">
               Range
             </p>
-            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 py-1 scrollbar-none">
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 py-1 scrollbar-none tablet:mx-0 tablet:flex-wrap tablet:px-0 desktop:mx-0 desktop:flex-wrap desktop:justify-center desktop:px-0">
               {presets.map((p) => (
                 <button
                   key={p.to}
@@ -89,101 +155,72 @@ export function NumberPicker() {
                   {p.from} to {p.to}
                 </button>
               ))}
+              {/* Computers type the range on the page instead. */}
               <button
                 type="button"
                 aria-pressed={!isPreset}
                 onClick={() => setSettingsOpen(true)}
-                className={chipClass}
+                className={`${chipClass} desktop:hidden`}
               >
                 {!isPreset && range.ok ? `${range.lo} to ${range.hi}` : "Custom"}
               </button>
             </div>
           </div>
-        }
-        footer={
-          <>
-            <RoundStrip
-              history={history}
-              emptyText="Numbers you pick show up here."
-              onReset={reset}
-              renderItem={(n) => (
-                <span className="block rounded-full bg-mint px-3 py-1.5 font-semibold text-ink tabular-nums">
-                  {n}
-                </span>
-              )}
-            />
-            <RollButton onClick={roll} disabled={rolling || !range.ok || usedUp}>
-              Pick a number
-            </RollButton>
-            {!range.ok ? (
-              <RollNote>{range.error} Tap Custom to fix it.</RollNote>
-            ) : usedUp ? (
-              <RollNote>
-                Every number from {range.lo} to {range.hi} has been picked. Tap New round to use
-                them again.
-              </RollNote>
-            ) : (
-              <RollNote keyboardOnly>Or press Space</RollNote>
-            )}
-          </>
-        }
+        </>
+      }
+      options={
+        <>
+          {rangeFields}
+          <div className="mt-2 border-t border-paper/10">{noRepeatsToggle}</div>
+        </>
+      }
+      panelOptions={noRepeatsToggle}
+      round={(panelOptions) => (
+        <RoundStrip
+          history={history}
+          emptyText="Numbers you pick show up here."
+          onReset={reset}
+          options={panelOptions}
+          renderItem={(n) => (
+            <span className="block rounded-full bg-mint px-3 py-1.5 font-semibold text-ink tabular-nums">
+              {n}
+            </span>
+          )}
+        />
+      )}
+      action={
+        <>
+          <RollButton onClick={roll} disabled={rolling || !range.ok || usedUp}>
+            Pick a number
+          </RollButton>
+          {!range.ok ? (
+            <RollNote>{range.error}</RollNote>
+          ) : usedUp ? (
+            <RollNote>
+              Every number from {range.lo} to {range.hi} has been picked. Start a new round to
+              use them again.
+            </RollNote>
+          ) : (
+            <RollNote keyboardOnly>Or press Space</RollNote>
+          )}
+        </>
+      }
+    >
+      <div
+        data-rolling={rolling}
+        className="piece @container grid size-[min(68vw,36dvh,17rem)] place-items-center rounded-full bg-mint tablet:size-[min(46vw,40dvh,22rem)] desktop:size-68"
       >
-        <div
-          data-rolling={rolling}
-          className="piece @container grid size-[min(68vw,36dvh,17rem)] place-items-center rounded-full bg-mint"
+        <span
+          key={rolls}
+          aria-hidden
+          className={`font-display leading-none tabular-nums ${sizeFor(text)} ${rolling ? "" : "land"}`}
         >
-          <span
-            key={rolls}
-            aria-hidden
-            className={`font-display leading-none tabular-nums ${sizeFor(text)} ${rolling ? "" : "land"}`}
-          >
-            {text}
-          </span>
-        </div>
-        <p aria-live="polite" className="sr-only">
-          {result ? `Pick ${rolls}: ${result}` : ""}
-        </p>
-      </GameScreen>
-
-      <Sheet open={settingsOpen} onClose={() => setSettingsOpen(false)} title="Settings">
-        <fieldset>
-          <legend className="text-sm font-semibold text-paper/75">Range</legend>
-          <div className="mt-2 grid grid-cols-2 gap-3">
-            <label className="font-semibold">
-              From
-              <input
-                type="number"
-                inputMode="numeric"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                aria-invalid={!range.ok}
-                aria-describedby="range-error"
-                className={inputClass}
-              />
-            </label>
-            <label className="font-semibold">
-              To
-              <input
-                type="number"
-                inputMode="numeric"
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                aria-invalid={!range.ok}
-                aria-describedby="range-error"
-                className={inputClass}
-              />
-            </label>
-          </div>
-          <p id="range-error" className="mt-2 min-h-6 text-sm font-semibold text-butter">
-            {range.ok ? "" : range.error}
-          </p>
-        </fieldset>
-        <div className="mt-2 border-t border-paper/10">
-          <Toggle checked={noRepeats} onChange={setNoRepeats}>
-            No repeats this round
-          </Toggle>
-        </div>
-      </Sheet>
-    </>
+          {text}
+        </span>
+      </div>
+      <p aria-live="polite" className="sr-only">
+        {result ? `Pick ${rolls}: ${result}` : ""}
+      </p>
+    </GameScreen>
   );
 }

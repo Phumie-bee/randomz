@@ -7,7 +7,7 @@ export function RollButton({ className = "", ...props }: ComponentProps<"button"
   return (
     <button
       type="button"
-      className={`press w-full rounded-full px-8 py-4 font-display text-xl ${className}`}
+      className={`press w-full rounded-full px-8 py-4 font-display text-xl tablet:mx-auto tablet:max-w-md desktop:w-auto desktop:min-w-60 desktop:px-10 ${className}`}
       {...props}
     />
   );
@@ -37,10 +37,15 @@ type RoundStripProps<T> = {
   emptyText: string;
   onReset: () => void;
   renderItem: (item: T) => ReactNode;
+  /** Settings shown inside the panel on computers. */
+  options?: ReactNode;
 };
 
-/** This round's picks as a sideways-scrolling strip, newest at the end. */
-export function RoundStrip<T>({ history, emptyText, onReset, renderItem }: RoundStripProps<T>) {
+/**
+ * This round's picks. Phones and tablets: a sideways-scrolling strip, newest
+ * at the end. Computers: a panel where picks wrap, with settings underneath.
+ */
+export function RoundStrip<T>({ history, emptyText, onReset, renderItem, options }: RoundStripProps<T>) {
   const headingId = useId();
   const listRef = useRef<HTMLOListElement>(null);
 
@@ -51,26 +56,34 @@ export function RoundStrip<T>({ history, emptyText, onReset, renderItem }: Round
   }, [history.length]);
 
   return (
-    <section aria-labelledby={headingId}>
-      <div className="flex items-center justify-between">
-        <h2 id={headingId} className="text-sm font-semibold text-paper/75">
+    <section
+      aria-labelledby={headingId}
+      className="desktop:rounded-[1.75rem] desktop:bg-table-deep desktop:p-8"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <h2
+          id={headingId}
+          className="text-sm font-semibold text-paper/75 desktop:font-display desktop:text-lg desktop:text-paper"
+        >
           This round ({history.length})
         </h2>
         <button
           type="button"
           onClick={onReset}
           disabled={history.length === 0}
-          className="-mr-2 rounded-full px-2 py-1 text-sm font-semibold text-butter disabled:text-paper/35"
+          className="-mr-2 rounded-full px-2 py-1 text-sm font-semibold text-butter disabled:text-paper/35 desktop:mr-0 desktop:border-2 desktop:border-paper/40 desktop:px-4 desktop:py-1.5 desktop:text-paper desktop:hover:border-paper desktop:disabled:border-paper/20"
         >
           New round
         </button>
       </div>
       {history.length === 0 ? (
-        <p className="flex h-12 items-center text-sm text-paper/60">{emptyText}</p>
+        <p className="flex h-12 items-center text-sm text-paper/60 desktop:mt-2 desktop:h-auto desktop:text-base">
+          {emptyText}
+        </p>
       ) : (
         <ol
           ref={listRef}
-          className="-mx-4 flex h-12 items-center gap-2 overflow-x-auto px-4 scrollbar-none"
+          className="-mx-4 flex h-12 items-center gap-2 overflow-x-auto px-4 scrollbar-none desktop:mx-0 desktop:mt-4 desktop:h-auto desktop:flex-wrap desktop:overflow-visible desktop:px-0"
         >
           {/* History only ever grows at the end, so index keys stay stable. */}
           {history.map((item, i) => (
@@ -79,6 +92,9 @@ export function RoundStrip<T>({ history, emptyText, onReset, renderItem }: Round
             </li>
           ))}
         </ol>
+      )}
+      {options && (
+        <div className="mt-6 hidden border-t-2 border-paper/15 pt-2 desktop:block">{options}</div>
       )}
     </section>
   );

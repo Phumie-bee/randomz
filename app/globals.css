@@ -16,6 +16,26 @@
   --font-sans: var(--font-schibsted);
 }
 
+/*
+ * Three layouts, picked by device:
+ * - phone (no variant): phone app with a bottom tab bar.
+ * - tablet: iPad-style app with a sidebar. Medium screens, or large touch screens.
+ * - desktop: the website design. Wide screens with a mouse or trackpad.
+ * tablet and desktop never match at the same time.
+ */
+@custom-variant tablet {
+  @media (min-width: 640px) and (min-height: 560px) and (hover: none),
+    (min-width: 640px) and (max-width: 1023.98px) and (min-height: 560px) {
+    @slot;
+  }
+}
+
+@custom-variant desktop {
+  @media (min-width: 1024px) and (hover: hover) {
+    @slot;
+  }
+}
+
 /* Behave like an installed app: no bounce past the edges, no grey flash
    on tap, no double-tap zoom delay. */
 html {
@@ -59,7 +79,8 @@ label,
   }
 }
 
-/* Bottom sheet built on <dialog>. */
+/* Settings panel built on <dialog>: a bottom sheet on phones, a centred
+   popup on tablets and computers. */
 .sheet {
   margin: auto auto 0;
   width: 100%;
@@ -69,6 +90,20 @@ label,
   border-radius: 1.75rem 1.75rem 0 0;
   background: var(--color-table-deep);
   color: var(--color-paper);
+
+  @variant tablet {
+    margin: auto;
+    width: calc(100% - 4rem);
+    max-width: 30rem;
+    border-radius: 1.75rem;
+  }
+
+  @variant desktop {
+    margin: auto;
+    width: calc(100% - 4rem);
+    max-width: 30rem;
+    border-radius: 1.75rem;
+  }
 }
 
 .sheet::backdrop {
@@ -77,11 +112,26 @@ label,
 
 .sheet[open] {
   animation: sheet-up 260ms cubic-bezier(0.2, 0.9, 0.3, 1);
+
+  @variant tablet {
+    animation: pop-in 200ms ease-out;
+  }
+
+  @variant desktop {
+    animation: pop-in 200ms ease-out;
+  }
 }
 
 @keyframes sheet-up {
   from {
     translate: 0 100%;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
   }
 }
 
