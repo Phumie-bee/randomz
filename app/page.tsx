@@ -29,6 +29,30 @@ const games: Game[] = [
     art: <span className="font-display text-xl leading-none tablet:text-3xl">kangaroo</span>,
   },
   {
+    href: "/truth-or-dare",
+    name: "Truth or Dare",
+    blurb: "Mild, Spicy or 18+",
+    color: "bg-paper",
+    art: (
+      <span className="flex items-end">
+        <span className="grid h-14 w-10 -rotate-12 place-items-center rounded-lg bg-lilac font-display text-xl tablet:h-20 tablet:w-14 tablet:text-3xl">
+          T
+        </span>
+        <span className="-ml-2 grid h-14 w-10 rotate-12 place-items-center rounded-lg bg-tangerine font-display text-xl tablet:h-20 tablet:w-14 tablet:text-3xl">
+          D
+        </span>
+      </span>
+    ),
+  },
+  {
+    href: "/concentration",
+    // Soft hyphen: on narrow phones the name breaks as "Concen-tration".
+    name: "Concen­tration",
+    blurb: "Name it on the beat",
+    color: "bg-sky",
+    art: <span className="font-display text-5xl leading-none tablet:text-7xl">64</span>,
+  },
+  {
     href: "/number",
     name: "Number",
     blurb: "Any range you like",
@@ -82,7 +106,7 @@ function AppHome() {
             <span className="hidden tablet:inline">Home</span>
           </>
         }
-        showHome={false}
+        centered={false}
       />
       <main className="@container flex-1 px-4 pt-2 pb-6 tablet:mx-auto tablet:w-full tablet:max-w-3xl tablet:px-8 tablet:pt-6">
         <h2 className="font-display text-[2rem] leading-tight tablet:text-5xl">
@@ -95,10 +119,11 @@ function AppHome() {
         {/* Two columns, or three when the screen is wide enough (iPad landscape). */}
         <ul className="mt-6 grid grid-cols-2 gap-3 tablet:mt-8 tablet:gap-4 @xl:grid-cols-3">
           {games.map((game) => (
-            <li key={game.href} className={game.wide ? "col-span-2" : ""}>
+            <li key={game.href} className={game.wide ? "col-span-2 @xl:col-span-3" : ""}>
               <Link
                 href={game.href}
-                className={`piece flex h-full flex-col justify-between gap-3 rounded-3xl p-4 transition-transform [--depth:6px] active:translate-y-1 ${game.color} ${game.wide ? "min-h-32" : "aspect-square"}`}
+                // Roughly square, but free to grow when a long name wraps.
+                className={`piece flex h-full flex-col justify-between gap-3 rounded-3xl p-4 transition-transform [--depth:6px] active:translate-y-1 ${game.color} ${game.wide ? "min-h-32" : "min-h-44 tablet:min-h-0 tablet:aspect-square"}`}
               >
                 <span className="flex flex-1 items-center">{game.art}</span>
                 <span>

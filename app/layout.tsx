@@ -19,7 +19,8 @@ export const metadata: Metadata = {
     default: "Randomz",
     template: "%s | Randomz",
   },
-  description: "Random letters, words, numbers, dice and teams for game night.",
+  description:
+    "Random letters, words, numbers, dice and teams, plus Truth or Dare and Concentration, for game night.",
   applicationName: "Randomz",
   // Lets iPhones open it full screen from the home screen, like an app.
   appleWebApp: {

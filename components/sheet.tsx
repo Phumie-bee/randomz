@@ -7,10 +7,12 @@ type Props = {
   onClose: () => void;
   title: string;
   children: ReactNode;
+  /** Label of the button that closes the panel. */
+  closeLabel?: string;
 };
 
 /** Settings panel: slides up from the bottom on phones, a centred popup on larger screens. */
-export function Sheet({ open, onClose, title, children }: Props) {
+export function Sheet({ open, onClose, title, children, closeLabel = "Done" }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 
@@ -44,7 +46,7 @@ export function Sheet({ open, onClose, title, children }: Props) {
             onClick={onClose}
             className="rounded-full px-3 py-1.5 font-semibold text-butter"
           >
-            Done
+            {closeLabel}
           </button>
         </div>
         <div className="mt-3">{children}</div>

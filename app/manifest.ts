@@ -5,7 +5,8 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Randomz",
     short_name: "Randomz",
-    description: "Random letters, words, numbers, dice and teams for game night.",
+    description:
+      "Random letters, words, numbers, dice and teams, plus Truth or Dare and Concentration, for game night.",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",

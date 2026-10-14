@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { parseNames } from "@/lib/names";
 import { shuffle } from "@/lib/random";
 import { useRollAnimation } from "@/lib/use-roll";
 import { ChoiceChips } from "./choice-chips";
@@ -9,13 +10,6 @@ import { TopBar } from "./top-bar";
 
 const teamCounts = [2, 3, 4, 5, 6].map((n) => ({ value: n, label: String(n) }));
 const teamColors = ["bg-butter", "bg-bubblegum", "bg-mint", "bg-tangerine", "bg-lilac", "bg-paper"];
-
-function parseNames(text: string) {
-  return text
-    .split(/[\n,]/)
-    .map((name) => name.trim())
-    .filter(Boolean);
-}
 
 // Deal shuffled players out one at a time so team sizes differ by at most one.
 function splitIntoTeams(names: string[], count: number) {

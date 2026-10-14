@@ -1,3 +1,7 @@
+"use client";
+
+import { useId } from "react";
+
 type Option<T> = { value: T; label: string };
 
 type Props<T extends string | number> = {
@@ -27,6 +31,10 @@ export function ChoiceChips<T extends string | number>({
   onChange,
   variant = "scroll",
 }: Props<T>) {
+  // The same chips can appear twice (settings sheet and page), so each copy
+  // needs its own radio group name.
+  const groupName = `${name}-${useId()}`;
+
   return (
     <fieldset>
       <legend className="mb-2 text-sm font-semibold text-paper/75 desktop:w-full desktop:text-center desktop:text-base">
@@ -37,14 +45,14 @@ export function ChoiceChips<T extends string | number>({
           variant === "scroll"
             ? // Phones scroll sideways; wider screens have room to wrap.
               "-mx-4 flex gap-2 overflow-x-auto px-4 py-1 scrollbar-none tablet:mx-0 tablet:flex-wrap tablet:px-0 desktop:mx-0 desktop:flex-wrap desktop:justify-center desktop:px-0"
-            : "grid auto-cols-fr grid-flow-col rounded-full bg-table-deep p-1 desktop:mx-auto desktop:max-w-sm"
+            : "grid auto-cols-fr grid-flow-col rounded-full bg-ink/40 p-1 desktop:mx-auto desktop:max-w-sm"
         }
       >
         {options.map((option) => (
           <label key={option.value} className={variant === "scroll" ? chipClass : segmentClass}>
             <input
               type="radio"
-              name={name}
+              name={groupName}
               value={option.value}
               checked={value === option.value}
               onChange={() => onChange(option.value)}

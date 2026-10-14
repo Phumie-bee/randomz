@@ -9,6 +9,7 @@
   --color-mint: #5be3b0;
   --color-tangerine: #ff9f4a;
   --color-lilac: #c8b8ff;
+  --color-sky: #7fd3ff;
   --color-ink: #2a0e38;
   --color-paper: #f4f6ff;
 
@@ -164,11 +165,11 @@ input[type="number"]::-webkit-outer-spin-button {
     0 var(--depth) 0 var(--color-ink);
 }
 
-/* Buttons press down onto their edge. */
+/* Buttons press down onto their edge. Set --press-bg to colour one. */
 .press {
   --depth: 6px;
   color: var(--color-ink);
-  background: var(--color-paper);
+  background: var(--press-bg, var(--color-paper));
   box-shadow: 0 var(--depth) 0 var(--color-ink);
   transition:
     translate 80ms ease-out,

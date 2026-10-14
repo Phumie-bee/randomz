@@ -1,6 +1,6 @@
 # Randomz
 
-Random picks for game night: letters, words, numbers, dice and teams.
+Random picks for game night: letters, words, numbers, dice, teams, Truth or Dare and Concentration.
 
 ## Run it
 
@@ -18,6 +18,8 @@ Then open http://localhost:3000.
 - `/number`: pick a random number from any range.
 - `/dice`: roll one to six dice.
 - `/teams`: split a list of players into random teams.
+- `/truth-or-dare`: truths and dares at three levels (Mild, Spicy, and 18+ behind an age check), with optional player names to track turns.
+- `/concentration`: random categories for the Concentration 64 clapping game, with an on-screen clap beat (optional sound, three speeds).
 
 ## Layouts
 
@@ -39,6 +41,8 @@ Randomz is built to feel like a phone app. Open the site on your phone, then:
 It then opens full screen from its own icon, without the browser bars.
 
 ## Changing the words
+
+Truth or Dare prompts are in `lib/truth-or-dare.ts` and Concentration categories in `lib/concentration.ts`.
 
 The word lists live in `lib/words.ts`. Add words to a category, or add a new category to the list and it shows up on the word page automatically.
 # randomz

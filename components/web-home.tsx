@@ -10,8 +10,8 @@ export function WebHome() {
           Random picks for game night
         </h1>
         <p className="mt-9 max-w-[44ch] text-xl text-paper/85">
-          Letters, words, numbers, dice and teams, picked at random. Pass the phone around, play,
-          then tap again.
+          Letters, words, dares, categories, dice and teams, picked at random. Pass the phone
+          around, play, then tap again.
         </p>
       </section>
 
@@ -36,6 +36,41 @@ export function WebHome() {
           </span>
         </Link>
       </div>
+
+      <section aria-labelledby="party-heading" className="mt-24">
+        <h2 id="party-heading" className="font-display text-2xl">
+          Party games
+        </h2>
+        <div className="mt-10 grid grid-cols-2 gap-12">
+          <Link href="/truth-or-dare" className="group block rounded-3xl">
+            <span className="flex h-36 items-end transition-transform group-hover:-translate-y-1">
+              <span className="piece grid h-32 w-28 -rotate-6 place-items-center rounded-2xl bg-lilac font-display text-xl [--depth:6px]">
+                truth
+              </span>
+              <span className="piece -ml-3 grid h-32 w-28 rotate-6 place-items-center rounded-2xl bg-tangerine font-display text-xl [--depth:6px]">
+                dare
+              </span>
+            </span>
+            <span className="mt-7 block font-display text-2xl">Truth or Dare</span>
+            <span className="mt-1 block max-w-[34ch] text-paper/85">
+              Questions and dares at three levels: Mild, Spicy and 18+. Add names and it keeps
+              track of whose turn it is.
+            </span>
+          </Link>
+
+          <Link href="/concentration" className="group block rounded-3xl">
+            <span className="flex h-36 items-end">
+              <span className="piece grid h-32 w-full max-w-96 place-items-center rounded-[1.75rem] bg-sky font-display text-4xl transition-transform [--depth:6px] group-hover:-translate-y-1">
+                Animals
+              </span>
+            </span>
+            <span className="mt-7 block font-display text-2xl">Concentration</span>
+            <span className="mt-1 block max-w-[34ch] text-paper/85">
+              Random categories for Concentration 64, with a clap beat to keep everyone in time.
+            </span>
+          </Link>
+        </div>
+      </section>
 
       <section aria-labelledby="more-heading" className="mt-24">
         <h2 id="more-heading" className="font-display text-2xl">

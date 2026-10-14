@@ -100,6 +100,56 @@ export function RoundStrip<T>({ history, emptyText, onReset, renderItem, options
   );
 }
 
+/** Numbered rules, folded away until someone opens them. */
+export function HowToPlay({ steps }: { steps: readonly ReactNode[] }) {
+  return (
+    <details className="group border-t border-paper/10 py-3.5">
+      <summary className="flex cursor-pointer list-none items-center justify-between font-semibold [&::-webkit-details-marker]:hidden">
+        How to play
+        <span aria-hidden className="text-paper/60 transition-transform group-open:rotate-180">
+          ▾
+        </span>
+      </summary>
+      <ol className="mt-3 list-decimal space-y-2 pl-5 text-paper/85 marker:text-paper/60">
+        {steps.map((step, i) => (
+          <li key={i}>{step}</li>
+        ))}
+      </ol>
+    </details>
+  );
+}
+
+type PlayersFieldProps = {
+  value: string;
+  onChange: (value: string) => void;
+  hint: string;
+};
+
+/** A box for player names, one per line or separated by commas. */
+export function PlayersField({ value, onChange, hint }: PlayersFieldProps) {
+  const id = useId();
+
+  return (
+    <div className="py-3.5">
+      <label htmlFor={id} className="block font-semibold">
+        Players <span className="font-normal text-paper/60">(optional)</span>
+      </label>
+      <p id={`${id}-hint`} className="mt-0.5 text-sm text-paper/70">
+        {hint}
+      </p>
+      <textarea
+        id={id}
+        rows={4}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-describedby={`${id}-hint`}
+        placeholder={"Alex\nSam\nJordan"}
+        className="mt-2 w-full resize-none rounded-2xl bg-paper p-3.5 text-base text-ink placeholder:text-ink/40"
+      />
+    </div>
+  );
+}
+
 type ToggleProps = {
   checked: boolean;
   onChange: (checked: boolean) => void;

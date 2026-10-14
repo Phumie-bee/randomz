@@ -2,15 +2,29 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Die } from "./die";
-import { HomeIcon } from "./icons";
+import { HomeIcon, MoreIcon } from "./icons";
+import { Sheet } from "./sheet";
+
+type Game = {
+  href: string;
+  label: string;
+  /** Shorter label for the phone tab bar, where space is tight. */
+  tabLabel?: string;
+  blurb: string;
+  icon: ReactNode;
+  /** Gets its own phone tab. The rest live under "More". */
+  phoneTab: boolean;
+};
 
 // Each game's icon is a tiny version of that game's piece.
-const games: { href: string; label: string; icon: ReactNode }[] = [
+const games: Game[] = [
   {
     href: "/letter",
     label: "Letter",
+    blurb: "Name, Animal, Place, Thing",
+    phoneTab: true,
     icon: (
       <span className="grid size-6 place-items-center rounded-md bg-butter font-display text-[0.8rem] text-ink">
         A
@@ -20,6 +34,8 @@ const games: { href: string; label: string; icon: ReactNode }[] = [
   {
     href: "/word",
     label: "Word",
+    blurb: "Charades and Pictionary",
+    phoneTab: true,
     icon: (
       <span className="grid h-5 w-8 place-items-center rounded-md bg-bubblegum font-display text-[0.55rem] text-ink">
         abc
@@ -27,8 +43,34 @@ const games: { href: string; label: string; icon: ReactNode }[] = [
     ),
   },
   {
+    href: "/truth-or-dare",
+    label: "Truth or Dare",
+    tabLabel: "Truth/Dare",
+    blurb: "Mild, Spicy or 18+",
+    phoneTab: true,
+    icon: (
+      <span className="relative block h-6 w-7">
+        <span className="absolute top-0.5 left-0.5 h-5 w-3.5 -rotate-12 rounded-[3px] bg-lilac" />
+        <span className="absolute top-0.5 right-0.5 h-5 w-3.5 rotate-12 rounded-[3px] bg-tangerine" />
+      </span>
+    ),
+  },
+  {
+    href: "/concentration",
+    label: "Concentration",
+    blurb: "Clap the beat, name things in a category",
+    phoneTab: false,
+    icon: (
+      <span className="grid size-6 place-items-center rounded-full bg-sky font-display text-[0.6rem] text-ink">
+        64
+      </span>
+    ),
+  },
+  {
     href: "/number",
     label: "Number",
+    blurb: "Any range you like",
+    phoneTab: false,
     icon: (
       <span className="grid size-6 place-items-center rounded-full bg-mint font-display text-[0.7rem] text-ink">
         7
@@ -38,11 +80,15 @@ const games: { href: string; label: string; icon: ReactNode }[] = [
   {
     href: "/dice",
     label: "Dice",
+    blurb: "Roll up to six",
+    phoneTab: false,
     icon: <Die value={3} className="size-6 [--depth:0px]" />,
   },
   {
     href: "/teams",
     label: "Teams",
+    blurb: "Split your group into random teams",
+    phoneTab: false,
     icon: (
       <span className="flex">
         <span className="size-4 rounded-full bg-tangerine" />
@@ -53,53 +99,111 @@ const games: { href: string; label: string; icon: ReactNode }[] = [
 ];
 
 /**
- * App navigation: a bottom tab bar on phones, a sidebar on tablets.
- * Hidden on computers, which get the website header instead.
+ * App navigation, hidden on computers (they get the website header).
+ * Phones: a bottom tab bar with Home, three games and "More" for the rest.
+ * Tablets: a sidebar listing everything.
  */
 export function AppNav() {
   const pathname = usePathname();
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreGames = games.filter((game) => !game.phoneTab);
 
   return (
     <nav
       aria-label="Games"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-paper/10 bg-table-deep/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md tablet:top-0 tablet:right-auto tablet:w-64 tablet:border-t-0 tablet:border-r tablet:pt-[env(safe-area-inset-top)] tablet:pb-6 desktop:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-paper/10 bg-table-deep/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md tablet:top-0 tablet:right-auto tablet:w-64 tablet:overflow-y-auto tablet:border-t-0 tablet:border-r tablet:pt-[env(safe-area-inset-top)] tablet:pb-6 desktop:hidden"
     >
       <p className="hidden px-6 pt-7 pb-5 font-display text-2xl tablet:block">Randomz</p>
       <ul className="mx-auto grid h-18 max-w-md grid-cols-5 tablet:flex tablet:h-auto tablet:max-w-none tablet:flex-col tablet:gap-1 tablet:px-3">
-        <li className="hidden tablet:block">
-          <NavRow href="/" label="Home" current={pathname === "/"} icon={<HomeIcon />} />
+        <li>
+          <NavItem href="/" label="Home" current={pathname === "/"} icon={<HomeIcon />} />
         </li>
         {games.map((game) => (
-          <li key={game.href}>
-            <NavRow
+          <li key={game.href} className={game.phoneTab ? "" : "hidden tablet:block"}>
+            <NavItem
               href={game.href}
               label={game.label}
+              tabLabel={game.tabLabel}
               current={pathname === game.href}
               icon={game.icon}
             />
           </li>
         ))}
+        <li className="tablet:hidden">
+          <NavItem
+            label="More"
+            current={moreGames.some((game) => game.href === pathname)}
+            icon={<MoreIcon />}
+            onClick={() => setMoreOpen(true)}
+          />
+        </li>
       </ul>
+
+      <Sheet open={moreOpen} onClose={() => setMoreOpen(false)} title="More games">
+        <ul className="divide-y divide-paper/10">
+          {moreGames.map((game) => (
+            <li key={game.href}>
+              <Link
+                href={game.href}
+                onClick={() => setMoreOpen(false)}
+                aria-current={pathname === game.href ? "page" : undefined}
+                className="flex items-center gap-4 py-3.5"
+              >
+                <span className="grid w-9 shrink-0 place-items-center">{game.icon}</span>
+                <span>
+                  <span className="block font-semibold">{game.label}</span>
+                  <span className="block text-sm text-paper/70">{game.blurb}</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Sheet>
     </nav>
   );
 }
 
-type NavRowProps = { href: string; label: string; current: boolean; icon: ReactNode };
+type NavItemProps = {
+  label: string;
+  tabLabel?: string;
+  current: boolean;
+  icon: ReactNode;
+} & ({ href: string; onClick?: never } | { href?: never; onClick: () => void });
 
 // Phone: icon above a small label, with a pill behind the current icon.
 // Tablet: icon beside the label, with the whole current row highlighted.
-function NavRow({ href, label, current, icon }: NavRowProps) {
-  return (
-    <Link
-      href={href}
-      aria-current={current ? "page" : undefined}
-      className="group flex h-full flex-col items-center justify-center gap-1 text-[0.7rem] font-semibold text-paper/60 aria-[current=page]:text-paper tablet:flex-row tablet:justify-start tablet:gap-3 tablet:rounded-2xl tablet:px-3 tablet:py-2.5 tablet:text-base tablet:active:bg-paper/10 tablet:aria-[current=page]:bg-paper/15"
-    >
-      <span className="grid h-8 w-14 place-items-center rounded-full opacity-55 transition group-active:scale-90 group-aria-[current=page]:bg-paper/15 group-aria-[current=page]:opacity-100 tablet:w-9 tablet:group-aria-[current=page]:bg-transparent">
+function NavItem({ href, label, tabLabel, current, icon, onClick }: NavItemProps) {
+  const className = `group flex h-full w-full flex-col items-center justify-center gap-1 text-[0.7rem] font-semibold tablet:flex-row tablet:justify-start tablet:gap-3 tablet:rounded-2xl tablet:px-3 tablet:py-2.5 tablet:text-base tablet:active:bg-paper/10 ${
+    current ? "text-paper tablet:bg-paper/15" : "text-paper/60"
+  }`;
+  const content = (
+    <>
+      <span
+        className={`grid h-8 w-14 place-items-center rounded-full transition group-active:scale-90 tablet:w-9 ${
+          current ? "bg-paper/15 opacity-100 tablet:bg-transparent" : "opacity-55"
+        }`}
+      >
         {icon}
       </span>
-      {label}
+      {tabLabel ? (
+        <>
+          <span className="tablet:hidden">{tabLabel}</span>
+          <span className="hidden tablet:inline">{label}</span>
+        </>
+      ) : (
+        label
+      )}
+    </>
+  );
+
+  return href ? (
+    <Link href={href} aria-current={current ? "page" : undefined} className={className}>
+      {content}
     </Link>
+  ) : (
+    <button type="button" onClick={onClick} className={className}>
+      {content}
+    </button>
   );
 }
 
@@ -119,7 +223,7 @@ export function SiteHeader() {
               <Link
                 href={game.href}
                 aria-current={pathname === game.href ? "page" : undefined}
-                className="block rounded-full px-4 py-2 font-semibold text-paper/85 hover:text-paper aria-[current=page]:bg-paper aria-[current=page]:text-ink"
+                className="block rounded-full px-3.5 py-2 font-semibold whitespace-nowrap text-paper/85 hover:text-paper aria-[current=page]:bg-paper aria-[current=page]:text-ink"
               >
                 {game.label}
               </Link>

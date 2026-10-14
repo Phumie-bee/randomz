@@ -14,8 +14,11 @@ type Props = {
   controls?: ReactNode;
   /** The result: tile, card, dice and so on. */
   children: ReactNode;
-  /** This round's history. Gets `panelOptions` passed in by the page. */
-  round: (panelOptions: ReactNode) => ReactNode;
+  /**
+   * This round's history. Gets `panelOptions` passed in by the page. Without
+   * it, computers show `panelOptions` in a panel of their own.
+   */
+  round?: (panelOptions: ReactNode) => ReactNode;
   /** The roll button and the note under it. */
   action: ReactNode;
   /** Settings, opened from the top bar on phones and tablets. */
@@ -62,9 +65,17 @@ export function GameScreen({
         </div>
         <div className="flex flex-col gap-4 desktop:w-full desktop:items-center">
           {/* On computers the history panel moves below the button. */}
-          <div className="desktop:order-last desktop:mt-10 desktop:w-full desktop:max-w-xl">
-            {round(panelOptions)}
-          </div>
+          {round ? (
+            <div className="desktop:order-last desktop:mt-10 desktop:w-full desktop:max-w-xl">
+              {round(panelOptions)}
+            </div>
+          ) : (
+            panelOptions && (
+              <div className="hidden desktop:order-last desktop:mt-10 desktop:block desktop:w-full desktop:max-w-xl desktop:rounded-[1.75rem] desktop:bg-table-deep desktop:px-8 desktop:py-6">
+                {panelOptions}
+              </div>
+            )
+          )}
           {action}
         </div>
       </main>
