@@ -22,3 +22,4 @@ Then open http://localhost:3000.
 ## Changing the words
 
 The word lists live in `lib/words.ts`. Add words to a category, or add a new category to the list and it shows up on the word page automatically.
+# randomz
