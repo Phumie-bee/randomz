@@ -5,6 +5,9 @@
   --color-cobalt-deep: #1f2fb8;
   --color-butter: #ffd447;
   --color-bubblegum: #ff8cc6;
+  --color-mint: #5be3b0;
+  --color-tangerine: #ff9f4a;
+  --color-lilac: #c8b8ff;
   --color-ink: #121a4d;
   --color-paper: #f4f6ff;
 
@@ -15,6 +18,17 @@
 body {
   background: var(--color-cobalt);
   color: var(--color-paper);
+}
+
+/* Hide number-input spinners so the value stays centred. */
+input[type="number"] {
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
 }
 
 :focus-visible {

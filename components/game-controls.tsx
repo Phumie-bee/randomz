@@ -12,22 +12,22 @@ export function RollButton({ className = "", ...props }: ComponentProps<"button"
 
 export function KeyHint({ children }: { children: ReactNode }) {
   return (
-    <p className="mt-5 hidden text-sm text-paper/70 [@media(pointer:fine)]:block">
+    <p className="mt-5 hidden text-sm text-paper/70 pointer-fine:block">
       {children}
     </p>
   );
 }
 
-type RoundPanelProps = {
-  history: string[];
+type RoundPanelProps<T> = {
+  history: readonly T[];
   emptyText: string;
   onReset: () => void;
-  renderItem: (item: string, index: number) => ReactNode;
-  children: ReactNode;
+  renderItem: (item: T) => ReactNode;
+  children?: ReactNode;
 };
 
 /** History for the current round, plus the page's options underneath. */
-export function RoundPanel({ history, emptyText, onReset, renderItem, children }: RoundPanelProps) {
+export function RoundPanel<T>({ history, emptyText, onReset, renderItem, children }: RoundPanelProps<T>) {
   return (
     <section
       aria-labelledby="round-heading"
@@ -54,13 +54,16 @@ export function RoundPanel({ history, emptyText, onReset, renderItem, children }
         <p className="mt-4 text-paper/70">{emptyText}</p>
       ) : (
         <ol className="mt-4 flex flex-wrap gap-2">
+          {/* History only ever grows at the end, so index keys stay stable. */}
           {history.map((item, i) => (
-            <li key={`${item}-${i}`}>{renderItem(item, i)}</li>
+            <li key={i}>{renderItem(item)}</li>
           ))}
         </ol>
       )}
 
-      <div className="mt-6 flex flex-col gap-3 border-t-2 border-paper/15 pt-6">{children}</div>
+      {children && (
+        <div className="mt-6 flex flex-col gap-3 border-t-2 border-paper/15 pt-6">{children}</div>
+      )}
     </section>
   );
 }

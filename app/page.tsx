@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Die } from "@/components/die";
 import { SiteHeader } from "@/components/site-header";
 
 export default function Home() {
@@ -11,8 +12,8 @@ export default function Home() {
             Random picks for game night
           </h1>
           <p className="mt-9 max-w-[44ch] text-lg text-paper/85 sm:text-xl">
-            Tap once for a fresh letter or word. Pass the phone around, play, then tap
-            again.
+            Letters, words, numbers, dice and teams, picked at random. Pass the phone around,
+            play, then tap again.
           </p>
         </section>
 
@@ -28,16 +29,58 @@ export default function Home() {
           </Link>
 
           <Link href="/word" className="group block rounded-3xl">
-            <span className="piece grid h-40 w-full max-w-[30rem] place-items-center rounded-[1.75rem] bg-bubblegum font-display text-[clamp(2.25rem,8vw,3.25rem)] transition-transform group-hover:-translate-y-1 sm:h-44">
+            <span className="piece grid h-40 w-full max-w-120 place-items-center rounded-[1.75rem] bg-bubblegum font-display text-[clamp(2.25rem,8vw,3.25rem)] transition-transform group-hover:-translate-y-1 sm:h-44">
               kangaroo
             </span>
             <span className="mt-7 block font-display text-2xl">Random word</span>
             <span className="mt-1 block max-w-[34ch] text-paper/85">
-              For charades, Pictionary and guessing games. Choose animals, food,
-              actions and more.
+              For charades, Pictionary and guessing games. Choose animals, food, actions and
+              more.
             </span>
           </Link>
         </div>
+
+        <section aria-labelledby="more-heading" className="mt-24">
+          <h2 id="more-heading" className="font-display text-2xl">
+            More ways to pick
+          </h2>
+          <div className="mt-10 grid gap-12 sm:grid-cols-3 sm:gap-8">
+            <Link href="/number" className="group block rounded-3xl">
+              <span className="flex h-28 items-end">
+                <span className="piece grid size-28 place-items-center rounded-full bg-mint font-display text-5xl transition-transform [--depth:6px] group-hover:-translate-y-1">
+                  42
+                </span>
+              </span>
+              <span className="mt-6 block font-display text-xl">Random number</span>
+              <span className="mt-1 block max-w-[28ch] text-paper/85">
+                Pick from any range, like 1 to 10 or 1 to 100.
+              </span>
+            </Link>
+
+            <Link href="/dice" className="group block rounded-3xl">
+              <span className="flex h-28 items-end gap-3 transition-transform group-hover:-translate-y-1">
+                <Die value={5} className="size-24 -rotate-6" />
+                <Die value={3} className="size-20 rotate-[8deg]" />
+              </span>
+              <span className="mt-6 block font-display text-xl">Dice</span>
+              <span className="mt-1 block max-w-[28ch] text-paper/85">
+                Roll one to six dice for board games.
+              </span>
+            </Link>
+
+            <Link href="/teams" className="group block rounded-3xl">
+              <span className="flex h-28 items-end">
+                <span className="piece grid h-28 w-full max-w-60 place-items-center rounded-3xl bg-tangerine font-display text-3xl transition-transform [--depth:6px] group-hover:-translate-y-1">
+                  us vs them
+                </span>
+              </span>
+              <span className="mt-6 block font-display text-xl">Team picker</span>
+              <span className="mt-1 block max-w-[28ch] text-paper/85">
+                Split your group into random teams.
+              </span>
+            </Link>
+          </div>
+        </section>
       </main>
     </>
   );

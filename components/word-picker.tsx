@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRoll } from "@/lib/use-roll";
 import { wordCategories, type CategoryId } from "@/lib/words";
+import { ChoiceChips } from "./choice-chips";
 import { KeyHint, RollButton, RoundPanel, Toggle } from "./game-controls";
 
 type Choice = CategoryId | "any";
@@ -11,9 +12,9 @@ const categoryOf = new Map<string, string>(
   wordCategories.flatMap((c) => c.words.map((w) => [w, c.label] as const)),
 );
 
-const choices: { id: Choice; label: string }[] = [
-  { id: "any", label: "Any" },
-  ...wordCategories.map((c) => ({ id: c.id, label: c.label })),
+const choices: { value: Choice; label: string }[] = [
+  { value: "any", label: "Any" },
+  ...wordCategories.map((c) => ({ value: c.id, label: c.label })),
 ];
 
 export function WordPicker() {
@@ -31,37 +32,22 @@ export function WordPicker() {
     noRepeats,
   });
   const usedUp = available.length === 0;
-  const choiceLabel = choices.find((c) => c.id === choice)!.label;
+  const choiceLabel = choices.find((c) => c.value === choice)!.label;
 
   return (
     <div className="flex flex-col items-center">
-      <fieldset className="mb-10 w-full max-w-xl">
-        <legend className="mb-3 w-full text-center font-semibold text-paper/85">
-          Draw from
-        </legend>
-        <div className="flex flex-wrap justify-center gap-2">
-          {choices.map((c) => (
-            <label
-              key={c.id}
-              className="cursor-pointer rounded-full border-2 border-paper/40 px-4 py-1.5 font-semibold hover:border-paper has-checked:border-paper has-checked:bg-paper has-checked:text-ink has-focus-visible:outline-3 has-focus-visible:outline-offset-3 has-focus-visible:outline-butter"
-            >
-              <input
-                type="radio"
-                name="category"
-                value={c.id}
-                checked={choice === c.id}
-                onChange={() => setChoice(c.id)}
-                className="sr-only"
-              />
-              {c.label}
-            </label>
-          ))}
-        </div>
-      </fieldset>
+      <ChoiceChips
+        legend="Draw from"
+        name="category"
+        options={choices}
+        value={choice}
+        onChange={setChoice}
+        className="mb-10"
+      />
 
       <div
         data-rolling={rolling}
-        className="piece relative grid min-h-56 w-full max-w-[34rem] place-items-center rounded-[1.75rem] bg-bubblegum px-6 py-12 text-center"
+        className="piece relative grid min-h-56 w-full max-w-136 place-items-center rounded-[1.75rem] bg-bubblegum px-6 py-12 text-center"
       >
         {result && !rolling && (
           <span className="absolute top-4 left-5 text-sm font-semibold text-ink/70">
