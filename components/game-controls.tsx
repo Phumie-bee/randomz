@@ -31,7 +31,7 @@ export function RoundPanel<T>({ history, emptyText, onReset, renderItem, childre
   return (
     <section
       aria-labelledby="round-heading"
-      className="mt-14 w-full max-w-xl rounded-[1.75rem] bg-cobalt-deep p-6 sm:p-8"
+      className="mt-14 w-full max-w-xl rounded-[1.75rem] bg-table-deep p-6 sm:p-8"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="round-heading" className="font-display text-lg">

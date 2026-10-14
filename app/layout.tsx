@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Dela_Gothic_One, Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
 
@@ -20,6 +20,11 @@ export const metadata: Metadata = {
   },
   description:
     "Random letters and words for game night. Tap once and play.",
+};
+
+// Matches --color-table so the phone's browser bar blends into the page.
+export const viewport: Viewport = {
+  themeColor: "#4a1a63",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
